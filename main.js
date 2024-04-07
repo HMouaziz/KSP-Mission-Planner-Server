@@ -8,13 +8,9 @@ const redis = require('./db/redisClient')
 
 require("dotenv").config();
 
-
-// Initialize database and Redis connections after this
-
-
 // Variable Definitions
 const PORT = process.env.PORT ?? 8080;
-const CLIENT = process.env.CLIENT ?? "http://localhost:5173/";
+const CLIENT = process.env.CLIENT ?? "http://localhost:5173";
 
 let server;
 const app = express();
