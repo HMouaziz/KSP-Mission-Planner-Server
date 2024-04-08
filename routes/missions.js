@@ -5,16 +5,14 @@ const {
   getById,
   update,
   remove,
+  create
 } = require("../controllers/missionsController");
 
 router.get("/", getAll);
 
 router.get("/:id", getById);
 
-router.post("/", (req, res) => {
-  console.log(req.body);
-  return res.status(200).json({ data: "yay!" });
-});
+router.post("/", create)
 
 router.put("/:id", update);
 
