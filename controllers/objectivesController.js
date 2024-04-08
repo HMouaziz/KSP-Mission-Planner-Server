@@ -1,9 +1,9 @@
-const { Objectives } = require("../models/Objectives");
+const  Objectives = require("../models/Objectives");
 const { handleRequest } = require("../utils/handleRequest");
 const { validateObjective } = require("../utils/validate");
 
 const objectivesController = {
-  getAll: handleRequest(async (req) => {
+  getAll: handleRequest(async (_req) => {
     const objectives = await Objectives.getAll();
     return {status: 200, body: {data: objectives}};
   }),
@@ -22,7 +22,7 @@ const objectivesController = {
     return {status: 200, body: {data: updatedObjective}};
   }),
   remove: handleRequest(async ({params: {id}}) => {
-    const numDeleted = await Objectives.remove(id);
+    await Objectives.remove(id);
     return {status: 200, body: {message: "Objective deleted successfully."}};
   }),
 };

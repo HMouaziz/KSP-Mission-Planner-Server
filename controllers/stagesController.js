@@ -1,9 +1,9 @@
-const { Stages } = require("../models/Stages");
+const  Stages  = require("../models/Stages");
 const { handleRequest } = require("../utils/handleRequest");
 const { validateStage } = require("../utils/validate");
 
 const stagesController = {
-  getAll: handleRequest(async (req) => {
+  getAll: handleRequest(async (_req) => {
     const stages = await Stages.getAll();
     return {status: 200, body: {data: stages}};
   }),
@@ -22,7 +22,7 @@ const stagesController = {
     return {status: 200, body: {data: updatedStage}};
   }),
   remove: handleRequest(async ({params: {id}}) => {
-    const numDeleted = await Stages.remove(id);
+    await Stages.remove(id);
     return {status: 200, body: {message: "Stage deleted successfully."}};
   }),
 };

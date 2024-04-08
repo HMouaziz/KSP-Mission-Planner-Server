@@ -1,9 +1,9 @@
-const { Missions } = require("../models/Missions");
+const Missions = require("../models/Missions");
 const { handleRequest } = require("../utils/handleRequest");
 const { validateMission } = require("../utils/validate");
 
 const missionsController = {
-  getAll: handleRequest(async (req) => {
+  getAll: handleRequest(async (_req) => {
     const missions = await Missions.getAll();
     return { status: 200, body: { data: missions } };
   }),
@@ -22,7 +22,7 @@ const missionsController = {
     return { status: 200, body: { data: updatedMission } };
   }),
   remove: handleRequest(async ({ params: { id } }) => {
-    const numDeleted = await Missions.remove(id);
+    await Missions.remove(id);
     return { status: 200, body: { message: "Mission deleted successfully." } };
   }),
 };
