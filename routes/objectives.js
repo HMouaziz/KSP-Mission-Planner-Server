@@ -2,18 +2,19 @@ const express = require("express");
 const router = express.Router();
 const {
   getAll,
-  getById,
+  getByMissionId,
   create,
   update,
   remove,
-} = require("../controllers/missionsController");
+} = require("../controllers/objectivesController");
 
-router.route("/")
+router.get("/:mission_id/objectives", getByMissionId);
+
+router.route("/objectives")
   .get(getAll)
   .post(create);
 
-router.route("/:id")
-  .get(getById)
+router.route("/objectives/:id")
   .put(update)
   .delete(remove);
 

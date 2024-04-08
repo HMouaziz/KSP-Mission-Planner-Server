@@ -5,6 +5,7 @@ const compression = require("compression");
 const morgan = require("morgan");
 const knex = require("./db/knexConfig");
 const redis = require('./db/redisClient')
+const customErrorHandler = require('./utils/errorHandler')
 
 require("dotenv").config();
 
@@ -29,11 +30,17 @@ app.use(morgan("dev")); // Logging
 //TODO: Content Security Policy for helmet
 //TODO: Morgan Logging Strategy for production
 //TODO: Testing and Validation see: express-validator
-//TODO: Add centralised error handling
+app.use(customErrorHandler);
 
 // Routes
 const missionRoutes = require("./routes/missions");
 app.use("/api/missions", missionRoutes);
+
+const objectiveRoutes = require("./routes/objectives");
+app.use("/api/missions", objectiveRoutes);
+
+const stageRoutes = require("./routes/stages");
+app.use("/api/missions", stageRoutes);
 
 // Server functions
 const checkDBConnection = async () => {

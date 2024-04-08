@@ -1,22 +1,25 @@
 const knex = require("../db/knexConfig");
+const TABLE_NAME = "missions";
+
+const knexTable = () => knex(TABLE_NAME);
 
 const Missions = {
-  getAllMissions: async () => {
-    return knex("missions").select("*");
+  getAll: async () => {
+    return knexTable().select("*");
   },
-  getMissionById: async (id) => {
-    return knex("missions").where({ id }).first();
+  getById: async (id) => {
+    return knexTable().where("id", id).first();
   },
-  createNewMission: async (missionData) => {
-    return knex("missions").insert(missionData);
+  create: async (missionData) => {
+    return knexTable().insert(missionData);
   },
-  updateMissionById: async (id, missionData) => {
-    const missionQuery = knex("missions").where("id", id);
-    await missionQuery.update(missionData);
-    return missionQuery.first();
+  update: async (id, missionData) => {
+    const updatedMission = knexTable().where("id", id);
+    await updatedMission.update(missionData);
+    return updatedMission.first();
   },
-  removeMissionById: async (id) => {
-    return knex("missions").where("id", id).del();
+  remove: async (id) => {
+    return knexTable().where("id", id).del();
   },
 };
 

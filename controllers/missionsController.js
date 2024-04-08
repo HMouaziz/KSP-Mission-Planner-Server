@@ -1,104 +1,30 @@
-const {getAllMissions, getMissionById, createNewMission, updateMissionById, removeMissionById} = require("../models/Missions");
+const { Missions } = require("../models/Missions");
+const { handleRequest } = require("../utils/handleRequest");
+const { validateMission } = require("../utils/validate");
 
 const missionsController = {
-  getAll: async (req, res) => {
-    try {
-      const allMissions = await getAllMissions();
-      return res.status(200).json({ data: allMissions });
-    } catch (error) {
-      console.error("Error fetching inventory items: ", error);
-      return res.status(500).json({
-        error: "Failed to retrieve inventory items. Please try again later.",
-      });
-    }
-  },
-  getById: async (req, res) => {
-    const { id } = req.params;
-    try {
-      const mission = await getMissionById(id)
-      if (mission.length === 0) {
-        return res.status(404).json({ error: "Mission not found." });
-      }
-      return res.status(200).json({ data: mission[0] });
-    } catch (error) {
-      console.error("Error fetching mission: ", error);
-      return res.status(500).json({
-        error: "Failed to retrieve the mission. Please try again later.",
-      });
-    }
-  },
-  create: async (req, res) => {
-    const {
-      name,
-      description,
-      budget,
-      start_date,
-      launch_date,
-    } = req.body;
-
-    try {
-      const [newId] = await createNewMission({
-        name,
-        description,
-        budget,
-        start_date,
-        launch_date,
-      })
-      if (newId) {
-        return res
-          .status(201)
-          .json({ message: "Mission created successfully.", data: {newId}});
-      } else {
-        return res
-          .status(400)
-          .json({ error: "Mission could not be created. Please try again." });
-      }
-    } catch (error) {
-      console.error("Error creating mission:", error);
-      return res.status(500).json({
-        error: "Failed to create a new mission. Please try again later.",
-      });
-    }
-  },
-  update: async (req, res) => {
-    const { id } = req.params;
-    try {
-      const updatedMission = await updateMissionById(id, req.body)
-      if (updatedMission) {
-        return res.status(200).json(updatedMission);
-      } else {
-        return res.status(404).json({
-          error: "Mission not found. Update operation could not be performed.",
-        });
-      }
-    } catch (error) {
-      console.error("Error updating mission", error);
-      return res.status(500).json({
-        error: "Failed to update the Mission. Please try again later.",
-      });
-    }
-  },
-  remove: async (req, res) => {
-    const { id } = req.params;
-    try {
-      const numDeleted = await removeMissionById(id)
-      if (numDeleted) {
-        return res
-          .status(200)
-          .json({ message: "Mission deleted successfully." });
-      } else {
-        return res.status(404).json({
-          error:
-            "Mission not found. Deletion operation could not be performed.",
-        });
-      }
-    } catch (error) {
-      console.error("Error deleting mission: ", error);
-      return res.status(500).json({
-        error: "Failed to delete the mission. Please try again later.",
-      });
-    }
-  },
+  getAll: handleRequest(async (req) => {
+    const missions = await Missions.getAll();
+    return { status: 200, body: { data: missions } };
+  }),
+  getById: handleRequest(async ({ params: { id } }) => {
+    const mission = await Missions.getById(id);
+    return { status: 200, body: { data: mission[0] } };
+  }),
+  create: handleRequest(async ({ body }) => {
+    validateMission(body);
+    const [newId] = await Missions.create(body);
+    return { status: 201, body: { message: "Mission created successfully.", data: { newId } } };
+  }),
+  update: handleRequest(async ({ params: { id }, body }) => {
+    validateMission(body);
+    const updatedMission = await Missions.update(id, body);
+    return { status: 200, body: { data: updatedMission } };
+  }),
+  remove: handleRequest(async ({ params: { id } }) => {
+    const numDeleted = await Missions.remove(id);
+    return { status: 200, body: { message: "Mission deleted successfully." } };
+  }),
 };
 
 module.exports = missionsController;
