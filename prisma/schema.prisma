@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model MissionType {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Mission     Mission[]
+
+  @@map("mission_types")
+}
+
+model Mission {
+  id          Int             @id @default(autoincrement())
+  name        String
+  description String?         @db.Text
+  budget      Int?
+  status      MissionStatus   @default(planned)
+  priority    MissionPriority @default(normal)
+  typeId      Int
+  missionType MissionType     @relation(fields: [typeId], references: [id])
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  Objective   Objective[]
+  Stage       Stage[]
+}
+
+enum MissionStatus {
+  planned
+  in_progress
+  completed
+  on_hold
+  failed
+  cancelled
+}
+
+enum MissionPriority {
+  high
+  normal
+  low
+}
+
+model Objective {
+  id          Int             @id @default(autoincrement())
+  missionId   Int
+  mission     Mission         @relation(fields: [missionId], references: [id])
+  description String?         @db.Text
+  type        ObjectiveType
+  data        String?
+  status      ObjectiveStatus @default(Planned)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+enum ObjectiveType {
+  Altitude
+  Flyby
+  OrbitDuration
+  PowerGeneration
+  Speed
+  CrewRequirement
+  Other
+}
+
+enum ObjectiveStatus {
+  Planned
+  InProgress
+  Completed
+  Failed
+}
+
+model Stage {
+  id          Int         @id @default(autoincrement())
+  missionId   Int
+  mission     Mission     @relation(fields: [missionId], references: [id])
+  orderIndex  Int
+  type        StageType
+  status      StageStatus @default(Planned)
+  description String?     @db.Text
+  data        String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+enum StageType {
+  Maneuver
+  Deployment
+  Launch
+  CorrectionBurn
+  Burn
+  Aerobrake
+  Spacewalk
+  Other
+}
+
+enum StageStatus {
+  Planned
+  InProgress
+  Completed
+  Failed
+}
