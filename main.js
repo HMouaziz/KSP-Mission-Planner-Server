@@ -42,6 +42,9 @@ app.use("/api/missions", objectiveRoutes);
 const stageRoutes = require("./routes/stages");
 app.use("/api/missions", stageRoutes);
 
+const typeRoutes = require("./routes/types");
+app.use("/api/types", typeRoutes);
+
 // Server functions
 const checkDBConnection = async () => {
   try {

@@ -21,6 +21,14 @@ const stageSchema = Joi.object({
   data: Joi.string().allow(null),
 });
 
+const typeSchema = Joi.object({
+  id: Joi.number().integer().required(),
+  name: Joi.string().max(255).required(),
+  description: Joi.string().allow(null),
+  created_at: Joi.date().iso(),
+  updated_at: Joi.date().iso(),
+});
+
 const objectiveSchema = Joi.object({
   mission_id: Joi.number().integer().required(),
   description: Joi.string().allow(null),
@@ -53,4 +61,11 @@ const validateObjective = (objectiveData) => {
   }
 };
 
-module.exports = { validateMission, validateStage, validateObjective };
+const validateType = (typeData) => {
+  const { error } = typeSchema.validate(typeData);
+  if (error) {
+    throw new Error(error.details[0].message);
+  }
+};
+
+module.exports = { validateMission, validateStage, validateObjective, validateType };
