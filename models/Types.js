@@ -1,26 +1,37 @@
-const knex = require("../db/knexConfig");
-const TABLE_NAME = "mission_types";
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
-const knexTable = () => knex(TABLE_NAME);
+class Types {
+  static async getAll() {
+    return prisma.missionType.findMany();
+  }
 
-const Types = {
-  getAll: async () => {
-    return knexTable().select("*");
-  },
-  getById: async (id) => {
-    return knexTable().where("id", id).first();
-  },
-  create: async (typeData) => {
-    return knexTable().insert(typeData);
-  },
-  update: async (id, typeData) => {
-    const updatedType = knexTable().where("id", id);
-    await updatedType.update(typeData);
-    return updatedType.first();
-  },
-  remove: async (id) => {
-    return knexTable().where("id", id).del();
-  },
-};
+  static async getById(id) {
+    return prisma.missionType.findUnique({
+      where: {id},
+    });
+  }
+
+  static async create(typeData) {
+    return prisma.missionType.create({
+      data: typeData,
+    });
+  }
+
+  static async update(id, typeData) {
+    return prisma.missionType.update({
+      where: {id},
+      data: typeData,
+    });
+  }
+
+  static async remove(id) {
+    return prisma.missionType.delete({
+      where: {id},
+    });
+  }
+}
+
+console.log(Types.getAll())
 
 module.exports = Types;

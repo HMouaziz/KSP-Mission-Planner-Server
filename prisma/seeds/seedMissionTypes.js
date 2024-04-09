@@ -1,11 +1,11 @@
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
-exports.seed = async function(knex) {
-  await knex('mission_types').del()
+// prismaSeed.js
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
-  await knex('mission_types').insert([
+async function main() {
+  await prisma.missionType.deleteMany();
+
+  const missionTypes = [
     { name: 'Exploration', description: 'Missions focused on exploring new planets, moons, and regions of space.' },
     { name: 'Satellite Deployment', description: 'Launch missions aimed at placing satellites into specific orbits.' },
     { name: 'Science', description: 'Missions dedicated to conducting scientific research and experiments in space.' },
@@ -14,5 +14,22 @@ exports.seed = async function(knex) {
     { name: 'Construction', description: 'Projects focused on constructing structures in space, including space stations and outposts.' },
     { name: 'Test Flight', description: 'Flights aimed at testing new spacecraft, components, or technologies in various space conditions.' },
     { name: 'Other', description: 'Miscellaneous missions that do not fit into the standard categories.' }
-  ]);
-};
+  ];
+
+  for (const type of missionTypes) {
+    await prisma.missionType.create({
+      data: type,
+    });
+  }
+
+  console.log(`Seeded mission types successfully.`);
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
