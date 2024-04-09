@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node main.js",
     "dev": "node --watch main.js",
-    "migrate": "cd db && knex migrate:latest",
-    "seed": "cd db && knex seed:run",
+    "migrate": "npx prisma migrate dev",
+    "seed": "seedMissionTypes.js && node seedMissions.js && node seedObjectives.js && node seedStages.js",
     "test": "mocha"
   },
   "author": "Halim Mouaziz",
