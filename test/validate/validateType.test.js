@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const {validateType} = require("../utils/validate");
+const {validateType} = require("../../utils/validate");
 
 describe('Type Validation', () => {
   it('should validate a valid type object', () => {

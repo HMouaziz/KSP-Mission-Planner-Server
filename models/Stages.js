@@ -1,26 +1,37 @@
-const knex = require("../db/knexConfig");
-const TABLE_NAME = "stages";
+const { PrismaClient } = require("@prisma/client");
 
-const knexTable = () => knex(TABLE_NAME);
+const prisma = new PrismaClient();
 
-const Stages = {
-  getAll: async () => {
-    return knexTable().select("*");
+const stages = {
+  getAll: () => {
+    return prisma.stage.findMany();
   },
-  getByMissionId: async (mission_id) => {
-    return knexTable().where("mission_id", mission_id).first();
+  getById: (id) => {
+    return prisma.stage.findUnique({
+      where: {id: parseInt(id)},
+    });
   },
-  create: async (stageData) => {
-    return knexTable().insert(stageData);
+  getByMissionId:(mission_id) => {
+    return prisma.stage.findUnique({
+      where: {missionId: parseInt(mission_id)},
+    });
   },
-  update: async (id, stageData) => {
-    const updatedStage = knexTable().where("id", id);
-    await updatedStage.update(stageData);
-    return updatedStage.first();
+  create: (typeData) => {
+    return prisma.stage.create({
+      data: typeData,
+    });
   },
-  remove: async (id) => {
-    return knexTable().where("id", id).del();
+  update: (id, typeData) => {
+    return prisma.stage.update({
+      where: {id: parseInt(id)},
+      data: typeData,
+    });
   },
+  remove: (id) => {
+    return prisma.stage.delete({
+      where: {id: parseInt(id)},
+    });
+  }
 };
 
-module.exports = Stages;
+module.exports = stages;

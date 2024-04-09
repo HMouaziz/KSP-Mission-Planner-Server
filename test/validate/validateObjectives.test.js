@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const {validateObjective} = require("../utils/validate");
+const {validateObjective} = require("../../utils/validate");
 
 describe('Objective Validation', () => {
   it('should validate a valid objective object', () => {

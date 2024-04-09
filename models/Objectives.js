@@ -1,26 +1,37 @@
-const knex = require("../db/knexConfig");
-const TABLE_NAME = "objectives";
+const { PrismaClient } = require("@prisma/client");
 
-const knexTable = () => knex(TABLE_NAME);
+const prisma = new PrismaClient();
 
-const Objectives = {
-  getAll: async () => {
-    return knexTable().select("*");
+const objectives = {
+  getAll: () => {
+    return prisma.objective.findMany();
   },
-  getByMissionId: async (mission_id) => {
-    return knexTable().where("mission_id", mission_id).first();
+  getById: (id) => {
+    return prisma.objective.findUnique({
+      where: {id: parseInt(id)},
+    });
   },
-  create: async (objectiveData) => {
-    return knexTable().insert(objectiveData);
+  getByMissionId:(mission_id) => {
+    return prisma.objective.findUnique({
+      where: {missionId: parseInt(mission_id)},
+    });
   },
-  update: async (id, objectiveData) => {
-    const updatedObjective = knexTable().where("id", id);
-    await updatedObjective.update(objectiveData);
-    return updatedObjective.first();
+  create: (typeData) => {
+    return prisma.objective.create({
+      data: typeData,
+    });
   },
-  remove: async (id) => {
-    return knexTable().where("id", id).del();
+  update: (id, typeData) => {
+    return prisma.objective.update({
+      where: {id: parseInt(id)},
+      data: typeData,
+    });
   },
+  remove: (id) => {
+    return prisma.objective.delete({
+      where: {id: parseInt(id)},
+    });
+  }
 };
 
-module.exports = Objectives;
+module.exports = objectives;

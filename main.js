@@ -3,9 +3,10 @@ const cors = require("cors");
 const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
-const knex = require("./db/knexConfig");
+const { PrismaClient, $disconnect} = require("@prisma/client");
 const redis = require('./db/redisClient')
 const customErrorHandler = require('./utils/errorHandler')
+
 
 require("dotenv").config();
 
@@ -47,11 +48,12 @@ app.use("/api/types", typeRoutes);
 
 // Server functions
 const checkDBConnection = async () => {
+  const prisma = new PrismaClient();
   try {
-    await knex.raw("select 1+1 as result");
-    console.log("MySQL database connection successful.");
+    await prisma.$queryRaw`SELECT 1+1 AS result`;
+    console.log("Database connection successful.");
   } catch (error) {
-    console.error("MySQL database connection failed:", error);
+    console.error("Database connection failed:", error);
     process.exit(1);
   }
 };
@@ -64,7 +66,7 @@ const gracefulShutdown = () => {
       process.exit(1);
     }
     try {
-      await knex.destroy();
+      await $disconnect();
       console.log("MySQL database connection successfully terminated.");
     } catch (error) {
       console.error("Error during MySQL database connection shutdown:", error);

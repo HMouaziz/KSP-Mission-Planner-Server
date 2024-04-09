@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const {
   getAll,
+  getById,
   create,
   update,
   remove,
@@ -12,6 +13,7 @@ router.route("/objectives")
   .post(create);
 
 router.route("/objectives/:id")
+  .get(getById)
   .put(update)
   .delete(remove);
 

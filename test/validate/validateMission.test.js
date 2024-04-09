@@ -1,5 +1,5 @@
 const chai = require('chai');
-const {validateMission} = require("../utils/validate");
+const {validateMission} = require("../../utils/validate");
 const expect = chai.expect;
 
 describe('Mission validation', function() {

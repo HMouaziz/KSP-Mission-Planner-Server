@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const {validateStage} = require("../utils/validate");
+const {validateStage} = require("../../utils/validate");
 
 
 describe('Stage Validation', () => {

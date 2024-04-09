@@ -10,6 +10,7 @@ const {
 const {getByMissionId: getObjectivesByMissionId} = require("../controllers/objectivesController");
 const {getByMissionId: getStagesByMissionId} = require("../controllers/stagesController");
 
+// Standard routes
 router.route("/")
   .get(getAll)
   .post(create);
@@ -19,6 +20,7 @@ router.route("/:id")
   .put(update)
   .delete(remove);
 
+// Property routes
 router.get("/:mission_id/objectives", getObjectivesByMissionId);
 router.get("/:mission_id/stages", getStagesByMissionId)
 

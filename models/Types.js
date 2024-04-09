@@ -1,37 +1,32 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
+
 const prisma = new PrismaClient();
 
-class Types {
-  static async getAll() {
+const types = {
+  getAll: () => {
     return prisma.missionType.findMany();
-  }
-
-  static async getById(id) {
+  },
+  getById: (id) => {
     return prisma.missionType.findUnique({
-      where: {id},
+      where: {id: parseInt(id)},
     });
-  }
-
-  static async create(typeData) {
+  },
+  create: (typeData) => {
     return prisma.missionType.create({
       data: typeData,
     });
-  }
-
-  static async update(id, typeData) {
+  },
+  update: (id, typeData) => {
     return prisma.missionType.update({
-      where: {id},
+      where: {id: parseInt(id)},
       data: typeData,
     });
-  }
-
-  static async remove(id) {
+  },
+  remove: (id) => {
     return prisma.missionType.delete({
-      where: {id},
+      where: {id: parseInt(id)},
     });
   }
-}
+};
 
-console.log(Types.getAll())
-
-module.exports = Types;
+module.exports = types;
