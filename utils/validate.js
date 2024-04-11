@@ -6,12 +6,12 @@ const missionSchema = Joi.object({
   budget: Joi.number().allow(null),
   status: Joi.string().valid('planned', 'in_progress', 'completed', 'on_hold', 'failed', 'cancelled').default('planned'),
   priority: Joi.string().valid('high', 'normal', 'low').default('normal'),
-  type_id: Joi.number().integer().required(),
+  typeId: Joi.number().integer().required(),
 });
 
 const stageSchema = Joi.object({
-  mission_id: Joi.number().integer().required(),
-  order_index: Joi.number().integer().required(),
+  missionId: Joi.number().integer().required(),
+  orderIndex: Joi.number().integer().required(),
   type: Joi.string().valid(
     'Maneuver', 'Deployment', 'Launch', 'CorrectionBurn',
     'Burn', 'Aerobrake', 'Spacewalk', 'Other'
@@ -25,12 +25,12 @@ const typeSchema = Joi.object({
   id: Joi.number().integer().required(),
   name: Joi.string().max(255).required(),
   description: Joi.string().allow(null),
-  created_at: Joi.date().iso(),
-  updated_at: Joi.date().iso(),
+  createdAt: Joi.date().iso(),
+  updatedAt: Joi.date().iso(),
 });
 
 const objectiveSchema = Joi.object({
-  mission_id: Joi.number().integer().required(),
+  missionId: Joi.number().integer().required(),
   description: Joi.string().allow(null),
   type: Joi.string().valid(
     'Altitude', 'Flyby', 'OrbitDuration', 'PowerGeneration',

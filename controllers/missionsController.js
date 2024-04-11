@@ -1,6 +1,13 @@
-const { getAll, getById, create, update, remove} = require("../models/Missions");
+const {
+  getAll,
+  getById,
+  create,
+  update,
+  remove,
+} = require("../models/Missions");
 const { handleRequest } = require("../utils/handleRequest");
 const { validateMission } = require("../utils/validate");
+const convertMissionNumber = require("../utils/convertMissionNumber");
 
 const missionsController = {
   getAll: handleRequest(async (_req) => {
@@ -14,11 +21,16 @@ const missionsController = {
   create: handleRequest(async ({ body }) => {
     validateMission(body);
     const [newId] = await create(body);
-    return { status: 201, body: { message: "Mission created successfully.", data: { newId } } };
+    return {
+      status: 201,
+      body: { message: "Mission created successfully.", data: { newId } },
+    };
   }),
-  update: handleRequest(async ({ params: { id }, body }) => {
-    validateMission(body);
-    const updatedMission = await update(id, body);
+  update: handleRequest(async ({ body }) => {
+    const { id, createdAt, updatedAt, ...data } = body;
+    const cData = convertMissionNumber(data)
+    validateMission(cData);
+    const updatedMission = await update(id, cData);
     return { status: 200, body: { data: updatedMission } };
   }),
   remove: handleRequest(async ({ params: { id } }) => {
