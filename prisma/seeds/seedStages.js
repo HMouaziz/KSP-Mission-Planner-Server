@@ -1,26 +1,32 @@
-const { PrismaClient } = require('@prisma/client');
-const { faker } = require('@faker-js/faker');
+const { PrismaClient } = require("@prisma/client");
+const { faker } = require("@faker-js/faker");
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // Clear out the existing stages data
   await prisma.stage.deleteMany();
 
-  // Fetch the first Mission as a reference
   const firstMission = await prisma.mission.findFirst({
-    select: { id: true }
+    select: { id: true },
   });
 
   if (!firstMission) {
-    console.log('No missions found. Please seed missions table first.');
+    console.log("No missions found. Please seed missions table first.");
     return;
   }
 
-  const typeOptions = ['Maneuver', 'Deployment', 'Launch', 'CorrectionBurn', 'Burn', 'Aerobrake', 'Spacewalk', 'Other'];
+  const typeOptions = [
+    "Maneuver",
+    "Deployment",
+    "Launch",
+    "CorrectionBurn",
+    "Burn",
+    "Aerobrake",
+    "Spacewalk",
+    "Other",
+  ];
   const statusOptions = ["Planned", "InProgress", "Completed", "Failed"];
 
-  // Generate stages data
   const stages = [];
   for (let i = 0; i < 10; i++) {
     stages.push({
@@ -36,16 +42,14 @@ async function main() {
     });
   }
 
-  // Insert stages into the database
   for (const stage of stages) {
     await prisma.stage.create({
       data: {
         ...stage,
-        data: JSON.stringify(stage.data), // Serialize the data object to a JSON string
+        data: JSON.stringify(stage.data),
       },
     });
   }
-
 
   console.log(`Seeded stages successfully.`);
 }

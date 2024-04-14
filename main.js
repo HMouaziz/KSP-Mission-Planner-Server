@@ -3,10 +3,9 @@ const cors = require("cors");
 const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
-const { PrismaClient, $disconnect} = require("@prisma/client");
-const redis = require('./db/redisClient')
-const customErrorHandler = require('./utils/errorHandler')
-
+const { PrismaClient, $disconnect } = require("@prisma/client");
+const redis = require("./db/redisClient");
+const customErrorHandler = require("./utils/errorHandler");
 
 require("dotenv").config();
 
@@ -21,16 +20,16 @@ const app = express();
 app.use(cors({ origin: CLIENT }));
 app.use(express.static("public"));
 app.use(express.json());
-app.use(helmet()); // Web vulnerability protection
-app.use(compression()); // Response compression
-app.use(morgan("dev")); // Logging
+app.use(helmet());
+app.use(compression());
+app.use(morgan("dev"));
 //TODO: Add rate limiter
 //TODO: Add swagger api docs
 //TODO: Add HTTPS redirection
 //TODO: Security headers for CORS
 //TODO: Content Security Policy for helmet
 //TODO: Morgan Logging Strategy for production
-//TODO: Testing and Validation see: express-validator
+//TODO: Testing and Validation for CI/CD
 app.use(customErrorHandler);
 
 // Routes
