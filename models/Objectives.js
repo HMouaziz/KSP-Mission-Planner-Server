@@ -12,7 +12,7 @@ const objectives = {
     });
   },
   getByMissionId:(mission_id) => {
-    return prisma.objective.findUnique({
+    return prisma.objective.findMany({
       where: {missionId: parseInt(mission_id)},
     });
   },

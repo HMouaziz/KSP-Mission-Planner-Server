@@ -1,7 +1,6 @@
-const  {} = require("../models/Objectives");
+const  { getAll, getById, getByMissionId, create, update, remove} = require("../models/Objectives");
 const { handleRequest } = require("../utils/handleRequest");
 const { validateObjective } = require("../utils/validate");
-const {getById} = require("../models/Stages");
 
 const objectivesController = {
   getAll: handleRequest(async (_req) => {
@@ -13,8 +12,8 @@ const objectivesController = {
     return {status: 200, body: {data: objective[0]}};
   }),
   getByMissionId: handleRequest(async ({params: {mission_id}}) => {
-    const objective = await getByMissionId(mission_id);
-    return {status: 200, body: {data: objective[0]}};
+    const objectives = await getByMissionId(mission_id);
+    return {status: 200, body: {data: objectives}};
   }),
   create: handleRequest(async ({body}) => {
     validateObjective(body);
