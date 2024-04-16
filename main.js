@@ -45,6 +45,9 @@ app.use("/api/missions", stageRoutes);
 const typeRoutes = require("./routes/types");
 app.use("/api/types", typeRoutes);
 
+const eclipseRoutes = require("./routes/eclipse")
+app.use("/api/eclipse", eclipseRoutes)
+
 // Server functions
 const checkDBConnection = async () => {
   const prisma = new PrismaClient();
