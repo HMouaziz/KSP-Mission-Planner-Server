@@ -25,7 +25,7 @@ model Mission {
   budget      Int?
   status      MissionStatus   @default(planned)
   priority    MissionPriority @default(normal)
-  typeId      Int
+  typeId      Int             @default(1)
   missionType MissionType     @relation(fields: [typeId], references: [id])
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt

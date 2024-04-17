@@ -12,6 +12,7 @@ const missions = {
     });
   },
   create: (missionData) => {
+    console.log(missionData)
     return prisma.mission.create({
       data: missionData,
     });

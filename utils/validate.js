@@ -2,11 +2,11 @@ const Joi = require('joi');
 
 const missionSchema = Joi.object({
   name: Joi.string().max(255).required(),
-  description: Joi.string().allow(null),
+  description: Joi.string().allow('', null),
   budget: Joi.number().allow(null),
   status: Joi.string().valid('planned', 'in_progress', 'completed', 'on_hold', 'failed', 'cancelled').default('planned'),
   priority: Joi.string().valid('high', 'normal', 'low').default('normal'),
-  typeId: Joi.number().integer().required(),
+  typeId: Joi.number().integer().allow(null),
 });
 
 const stageSchema = Joi.object({

@@ -2,10 +2,7 @@ const { getBodies } = require("../models/Eclipse");
 
 const eclipseController = {
   calculate: (req, res) => {
-    const { body:bodyId } = req.body
-    const apoapsis = 1000000
-    const periapsis = 1000000
-
+    const { body:bodyId, apoapsis, periapsis } = req.body
     const bodies = getBodies();
     const body = bodies.find(body => body.id === bodyId)
 
