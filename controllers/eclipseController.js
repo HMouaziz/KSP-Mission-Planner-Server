@@ -1,7 +1,7 @@
 const { getBodies } = require("../models/Eclipse");
 
 const eclipseController = {
-  calculate: (req) => {
+  calculate: (req, res) => {
     const { body:bodyId } = req.body
     const apoapsis = 1000000
     const periapsis = 1000000
@@ -25,8 +25,7 @@ const eclipseController = {
     }
 
     const result = ((2 * a * b) / h) * (1 / sinValue + (e * R / b))
-
-    return { status: 200, body: { data: result  } }
+    res.json({ status: 200, data: { data: result  } })
   },
 };
 
