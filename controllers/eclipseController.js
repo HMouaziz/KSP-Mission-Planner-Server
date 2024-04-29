@@ -1,29 +1,41 @@
 const { getBodies } = require("../models/Eclipse");
+const { spawn } = require('child_process');
 
 const eclipseController = {
-  calculate: (req, res) => {
-    const { body:bodyId, apoapsis, periapsis } = req.body
-    const bodies = getBodies();
-    const body = bodies.find(body => body.id === bodyId)
+    calculate: (req, res) => {
+        const { body: bodyId, apoapsis, periapsis, inclination } = req.body;
+        const bodies = getBodies();
+        const body = bodies.find(body => body.id === bodyId);
 
-    const R = body.radius;                                             // Body radius
-    const Ra = apoapsis + R;                                           // Apoapsis measured from the center of the body
-    const Rp = periapsis + R;                                          // Periapsis measured from the center of the body
-    const a = (Ra + Rp) / 2;                                  // Semi-major axis
-    const b = Math.sqrt(Ra * Rp);                          // Semi-minor axis
-    const e = (Ra - Rp) / (Ra + Rp);                          // Eccentricity
-    const l = (2 * (Ra * Rp)) / (Ra + Rp);                    // Semi-latus rectum of the orbital ellipse
-    const u = body.stdGravParam;                                       // Gravitational parameter
-    const h = Math.sqrt(l * u);                            // Specific angular momentum
+        const inputData = JSON.stringify({
+            body: {
+                radius: body.radius,
+                stdGravParam: body.stdGravParam
+            },
+            apoapsis,
+            periapsis,
+            inclination
+        });
 
-    const sinValue= Math.sin(R / b);
-    if (sinValue === 0) {
-      throw new Error("Calculation error due to division by zero in the sine function.");
-    }
+        const pythonProcess = spawn('python', ['./calculate_eclipse.py', inputData]);
 
-    const result = ((2 * a * b) / h) * (1 / sinValue + (e * R / b))
-    res.json({ status: 200, data: { data: result  } })
-  },
+        pythonProcess.stdout.on('data', (data) => {
+            const result = JSON.parse(data);
+            if (result.status === 200) {
+                res.json({ status: 200, data: result.data });
+            } else {
+                res.status(400).json({ status: 400, error: result.error });
+            }
+        });
+
+        pythonProcess.stderr.on('data', (data) => {
+            console.error(`Error from Python script: ${data}`);
+        });
+
+        pythonProcess.on('close', (code) => {
+            console.log(`Python script exited with code ${code}`);
+        });
+    },
 };
 
 module.exports = eclipseController;
