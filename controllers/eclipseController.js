@@ -3,28 +3,34 @@ const { spawn } = require('child_process');
 
 const eclipseController = {
     calculate: (req, res) => {
-        const { body: bodyId, apoapsis, periapsis, inclination } = req.body;
+        const { bodyId, apoapsis, periapsis, inclination, longitudeOfAscendingNode,argumentOfPeriapsis } = req.body;
         const bodies = getBodies();
         const body = bodies.find(body => body.id === bodyId);
 
         const inputData = JSON.stringify({
             body: {
                 radius: body.radius,
-                stdGravParam: body.stdGravParam
+                stdGravParam: body.stdGravParam,
+                soi: body.soi,
+                mass: body.mass,
+                solarDistance: body.orbit.semiMajorAxis,
+                color: body.color,
             },
             apoapsis,
             periapsis,
-            inclination
+            inclination,
+            longitudeOfAscendingNode,
+            argumentOfPeriapsis
         });
 
-        const pythonProcess = spawn('python', ['./calculate_eclipse.py', inputData]);
+        const pythonProcess = spawn('python', ['./scripts/calculateEclipse.py', inputData]);
 
         pythonProcess.stdout.on('data', (data) => {
             const result = JSON.parse(data);
             if (result.status === 200) {
-                res.json({ status: 200, data: result.data });
+                res.json({ status: 200, data: result });
             } else {
-                res.status(400).json({ status: 400, error: result.error });
+                res.status(400).json({ status: 400, error: result });
             }
         });
 

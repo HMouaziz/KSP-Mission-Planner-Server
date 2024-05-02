@@ -3,11 +3,12 @@ import json
 from math import sqrt, sin, radians, cos
 
 
-def calculate_eclipse(radius, ap, pe, std_grav, inclination_degree):
+def calculate_eclipse(ap, pe, inclination_deg, longitude_deg, argument_deg, radius, std_grav, soi, central_mass, sol_distance,
+                      colour):
     R = radius
-    Ra = ap + R
-    Rp = pe + R
-    inclination = radians(inclination_degree)
+    Ra = int(ap) + R
+    Rp = int(pe) + R
+    inclination = radians(inclination_deg)
     a = (Ra + Rp) / 2
     b = sqrt(Ra * Rp)
     e = (Ra - Rp) / (Ra + Rp)
@@ -24,10 +25,17 @@ def calculate_eclipse(radius, ap, pe, std_grav, inclination_degree):
     res = ((2 * a * adjusted_b) / h) * (1 / sin_value + (e * R / adjusted_b))
 
     visualization_data = {
-        'semi_major_axis': a,
-        'semi_minor_axis': adjusted_b,
+        'solarDistance': sol_distance,
+        'soi': soi,
+        'centralMass': central_mass,
+        'celestialBodySize': radius,
+        'celestialBodyColor': colour,
+
+        'semiMajorAxis': a,
+        'semiMinorAxis': adjusted_b,
         'inclination': inclination_degree,
-        'eccentricity': e
+        'longitudeOfAscendingNode': longitude_deg,
+        'argumentOfPeriapsis': argument_deg,
     }
 
     return res, visualization_data
@@ -35,14 +43,33 @@ def calculate_eclipse(radius, ap, pe, std_grav, inclination_degree):
 
 if __name__ == '__main__':
     input_data = json.loads(sys.argv[1])
-    body_radius = input_data['body']['radius']
     apoapsis = input_data['apoapsis']
     periapsis = input_data['periapsis']
+    inclination_degree = input_data['inclination']
+    longitude_of_ascending_node = input_data['longitudeOfAscendingNode']
+    argument_of_periapsis = input_data['argumentOfPeriapsis']
+
+    body_radius = input_data['body']['radius']
     std_grav_param = input_data['body']['stdGravParam']
-    inclination_deg = input_data['inclination']
+    sphere_of_influence = input_data['body']['soi']
+    mass = input_data['body']['mass']
+    solar_distance = input_data['body']['solarDistance']
+    color = input_data['body']['color']
 
     try:
-        result, vis_data = calculate_eclipse(body_radius, apoapsis, periapsis, std_grav_param, inclination_deg)
+        result, vis_data = calculate_eclipse(
+            apoapsis,
+            periapsis,
+            inclination_degree,
+            longitude_of_ascending_node,
+            argument_of_periapsis,
+            body_radius,
+            std_grav_param,
+            sphere_of_influence,
+            mass,
+            solar_distance,
+            color
+        )
         print(json.dumps({'status': 200, 'result': result, 'visualization': vis_data}))
     except ValueError as e:
         print(json.dumps({'status': 400, 'error': str(e)}))
