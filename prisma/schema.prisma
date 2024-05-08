@@ -7,12 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  Missions     Mission[]
+  MissionTypes MissionType[]
+}
+
 model MissionType {
   id          Int       @id @default(autoincrement())
+  userId      Int
   name        String
   description String?   @db.Text
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   Mission     Mission[]
 
   @@map("mission_types")
@@ -20,13 +33,15 @@ model MissionType {
 
 model Mission {
   id          Int             @id @default(autoincrement())
+  userId      Int
   name        String
   description String?         @db.Text
   budget      Int?
   status      MissionStatus   @default(planned)
   priority    MissionPriority @default(normal)
   typeId      Int             @default(1)
-  missionType MissionType     @relation(fields: [typeId], references: [id])
+  missionType MissionType     @relation(fields: [typeId], references: [id], onDelete: Cascade)
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
   Objective   Objective[]
@@ -51,7 +66,7 @@ enum MissionPriority {
 model Objective {
   id          Int             @id @default(autoincrement())
   missionId   Int
-  mission     Mission         @relation(fields: [missionId], references: [id])
+  mission     Mission         @relation(fields: [missionId], references: [id], onDelete: Cascade)
   description String?         @db.Text
   type        ObjectiveType
   data        String?
@@ -80,7 +95,7 @@ enum ObjectiveStatus {
 model Stage {
   id          Int         @id @default(autoincrement())
   missionId   Int
-  mission     Mission     @relation(fields: [missionId], references: [id])
+  mission     Mission     @relation(fields: [missionId], references: [id], onDelete: Cascade)
   orderIndex  Int
   type        StageType
   status      StageStatus @default(Planned)
@@ -107,4 +122,3 @@ enum StageStatus {
   Completed
   Failed
 }
-
