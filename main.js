@@ -4,7 +4,7 @@ const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
 const { PrismaClient, $disconnect } = require("@prisma/client");
-const redis = require("./db/redisClient");
+const redis = require("./redis/redisClient");
 const customErrorHandler = require("./utils/errorHandler");
 
 require("dotenv").config();
@@ -34,19 +34,22 @@ app.use(customErrorHandler);
 
 // Routes
 const missionRoutes = require("./routes/missions");
-app.use("/api/missions", missionRoutes);
+app.use("/api/v1/missions", missionRoutes);
 
 const objectiveRoutes = require("./routes/objectives");
-app.use("/api/missions", objectiveRoutes);
+app.use("/api/v1/missions", objectiveRoutes);
 
 const stageRoutes = require("./routes/stages");
-app.use("/api/missions", stageRoutes);
+app.use("/api/v1/missions", stageRoutes);
 
 const typeRoutes = require("./routes/types");
-app.use("/api/types", typeRoutes);
+app.use("/api/v1/types", typeRoutes);
 
 const eclipseRoutes = require("./routes/eclipse")
-app.use("/api/eclipse", eclipseRoutes)
+app.use("/api/v1/eclipse", eclipseRoutes)
+
+const authRoutes = require("./routes/auth")
+app.use("/api/v1/auth", authRoutes)
 
 // Server functions
 const checkDBConnection = async () => {
