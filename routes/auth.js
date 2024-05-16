@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/userController');
-const {verifyRequest} = require("../auth/authMiddleware");
-const {getPublicKey} = require("../auth/authUtils");
+const {verifyAuthRequest} = require("../auth/authMiddleware");
+const {registerUser, loginUser, logoutUser, getPublicKey} = require("../controllers/authController");
+const {getSecretKey} = require("../auth/authUtils");
 
-router.post('/signup', verifyRequest, userController.register);
-router.post('/login', verifyRequest, userController.login);
-router.post('/logout', userController.logout);
+router.post('/signup', verifyAuthRequest, registerUser);
+router.post('/login', verifyAuthRequest, loginUser);
+router.post('/logout', logoutUser);
 router.get('/public-key', getPublicKey);
+router.get('/secret', getSecretKey)
 
 module.exports = router;

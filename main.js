@@ -4,8 +4,8 @@ const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
 const { PrismaClient, $disconnect } = require("@prisma/client");
-const redis = require("./redis/redisClient");
 const customErrorHandler = require("./utils/errorHandler");
+const {verifyRequest} = require('./auth/authMiddleware')
 
 require("dotenv").config();
 
@@ -16,8 +16,14 @@ const CLIENT = process.env.CLIENT ?? "http://localhost:5173";
 let server;
 const app = express();
 
+const corsOptions = {
+  origin: CLIENT,
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
 // Middleware
-app.use(cors({ origin: CLIENT }));
+app.use(cors(corsOptions));
 app.use(express.static("public"));
 app.use(express.json());
 app.use(helmet());
@@ -50,6 +56,11 @@ app.use("/api/v1/eclipse", eclipseRoutes)
 
 const authRoutes = require("./routes/auth")
 app.use("/api/v1/auth", authRoutes)
+
+//example
+app.use('/api/v1/protected', verifyRequest, (req, res) => {
+  res.send('This is a protected route');
+});
 
 // Server functions
 const checkDBConnection = async () => {

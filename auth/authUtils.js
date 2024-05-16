@@ -1,29 +1,69 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { readFile } = require('fs').promises;
-const fs = require('fs');
+const crypto = require('crypto');
+const {get, del} = require("../redis/redisClient");
+const {promisify} = require("util");
+const redisClient = require("../redis/redisClient");
 
+const setAsync = promisify(redisClient.set).bind(redisClient);
+
+function generateSecretKey() {
+  return crypto.randomBytes(32).toString('base64');
+}
+
+async function getSecretKey(req, res) {
+  const secretKey = generateSecretKey();
+  const requestId = crypto.randomBytes(16).toString('hex'); // Unique identifier for the request
+
+  // Store the secret key in Redis with a short expiration time (e.g., 5 minutes)   NEED TO HANDLE TIMEOUT ERROR ON FRONTEND AND ENDPOINT
+  await setAsync(requestId, secretKey, 'EX', 300);
+  console.log(requestId, secretKey)
+  res.status(200).json({ data: { requestId, secretKey } });
+}
 
 async function generateSalt() {
   return bcrypt.genSalt(10);
 }
 
 async function hashPassword(password, salt) {
+  console.log(password, salt)
   return await bcrypt.hash(password, salt);
 }
 
 function generateToken(user) {
+  const ttl = 24 * 60 * 60;
   const secretKey = process.env.JWT_SECRET;
-  return jwt.sign({
+  const token = jwt.sign({
     userId: user.id,
-    email: user.email
+    expiresIn: Math.floor(Date.now() / 1000) + ttl,
+    issuedAt: Math.floor(Date.now() / 1000)
   }, secretKey, { expiresIn: '24h' });
+
+  setAsync(token, JSON.stringify(user), 'EX', 24 * 60 * 60);
+  return token
 }
 
-function getPublicKey(req, res) {
-  fs.readFile('private.pem', 'utf8', (err, data) => {
-    res.status(200).json({ data: data });
-  });
+async function verifyToken(token) {
+  const secretKey = process.env.JWT_SECRET;
+  try {
+    const decoded = jwt.verify(token, secretKey);
+
+    // Check if the token is stored in Redis
+    const session = await get(token);
+    if (!session) {
+      throw new Error('Invalid session');
+    }
+
+    return JSON.parse(session);
+  } catch (err) {
+    // Handle token verification error
+    return null;
+  }
+}
+
+async function logoutUser(token) {
+  await del(token);
 }
 
 async function decryptData(encryptedData) {
@@ -42,17 +82,11 @@ async function decryptData(encryptedData) {
   return decrypted.toString('utf8');
 }
 
-function verifyHMAC(receivedData, receivedHMAC, secret) {
-  const hmac = crypto.createHmac('sha256', secret);
-  hmac.update(receivedData);
-  const calculatedHMAC = hmac.digest('hex');
-
-  return receivedHMAC === calculatedHMAC;
-}
-
 module.exports = {
   generateSalt,
   hashPassword,
   generateToken,
-  getPublicKey
+  decryptData,
+  verifyToken,
+  getSecretKey
 };
