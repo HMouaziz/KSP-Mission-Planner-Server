@@ -18,7 +18,6 @@ async function getSecretKey(req, res) {
 
   // Store the secret key in Redis with a short expiration time (e.g., 5 minutes)   NEED TO HANDLE TIMEOUT ERROR ON FRONTEND AND ENDPOINT
   await setAsync(requestId, secretKey, 'EX', 300);
-  console.log(requestId, secretKey)
   res.status(200).json({ data: { requestId, secretKey } });
 }
 
@@ -27,7 +26,6 @@ async function generateSalt() {
 }
 
 async function hashPassword(password, salt) {
-  console.log(password, salt)
   return await bcrypt.hash(password, salt);
 }
 

@@ -6,6 +6,7 @@ const morgan = require("morgan");
 const { PrismaClient, $disconnect } = require("@prisma/client");
 const customErrorHandler = require("./utils/errorHandler");
 const {verifyRequest} = require('./auth/authMiddleware')
+const cookieParser = require("cookie-parser");
 
 require("dotenv").config();
 
@@ -26,6 +27,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.static("public"));
 app.use(express.json());
+app.use(cookieParser());
 app.use(helmet());
 app.use(compression());
 app.use(morgan("dev"));

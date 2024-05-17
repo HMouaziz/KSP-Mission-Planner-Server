@@ -36,7 +36,8 @@ async function verifyAuthRequest(req, res, next) {
 }
 
 async function verifyRequest(req, res, next) {
-  const token = req.cookies.token;
+  const token = req.cookies?.token;
+  console.log(token)
   if (!token) {
     return res.status(401).json({error:'Unauthorized: No token provided'});
   }
