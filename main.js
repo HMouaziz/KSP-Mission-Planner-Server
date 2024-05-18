@@ -4,10 +4,9 @@ const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
 const { PrismaClient, $disconnect } = require("@prisma/client");
-const customErrorHandler = require("./utils/errorHandler");
-const {verifyRequest} = require('./auth/authMiddleware')
+const customErrorHandler = require("./middleware/errorHandler");
 const cookieParser = require("cookie-parser");
-
+const fs = require('fs').promises;
 require("dotenv").config();
 
 // Variable Definitions
@@ -57,12 +56,9 @@ const eclipseRoutes = require("./routes/eclipse")
 app.use("/api/v1/eclipse", eclipseRoutes)
 
 const authRoutes = require("./routes/auth")
+const {setAsync} = require("./redis/redisUtils");
 app.use("/api/v1/auth", authRoutes)
 
-//example
-app.use('/api/v1/protected', verifyRequest, (req, res) => {
-  res.send('This is a protected route');
-});
 
 // Server functions
 const checkDBConnection = async () => {
@@ -75,6 +71,16 @@ const checkDBConnection = async () => {
     process.exit(1);
   }
 };
+
+const loadAuthData = async () => {
+  try {
+    const data = await fs.readFile("./public.pem", "utf8");
+    await setAsync('publicKey', data);
+    console.log('Public key loaded into Redis');
+  } catch (err) {
+    console.error('Failed to load public key into Redis', err);
+  }
+}
 
 const gracefulShutdown = () => {
   console.log("Initiating graceful shutdown...");
@@ -99,6 +105,7 @@ const startServer = async () => {
   server = app.listen(PORT, () =>
     console.log(`Server is running on port ${PORT}`),
   );
+  await loadAuthData();
   return server;
 };
 

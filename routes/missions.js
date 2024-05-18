@@ -9,6 +9,9 @@ const {
 } = require("../controllers/missionsController");
 const {getByMissionId: getObjectivesByMissionId} = require("../controllers/objectivesController");
 const {getByMissionId: getStagesByMissionId} = require("../controllers/stagesController");
+const {verifyRequest} = require("../middleware/authMiddleware");
+
+router.use(verifyRequest)
 
 // Standard routes
 router.route("/")

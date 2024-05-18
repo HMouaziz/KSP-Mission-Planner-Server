@@ -8,6 +8,10 @@ const {
   remove,
 } = require("../controllers/objectivesController");
 
+const {verifyRequest} = require("../middleware/authMiddleware");
+
+router.use(verifyRequest)
+
 router.route("/objectives")
   .get(getAll)
   .post(create);
