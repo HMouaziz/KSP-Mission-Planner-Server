@@ -9,10 +9,19 @@ const Users = require("./Users");
 const { delAsync } = require("../redis/redisUtils");
 const UserNotFoundError = require("../errors/UserNotFoundError");
 const PasswordMismatchError = require("../errors/PasswordMismatchError");
+const UserAlreadyExistsError = require("../errors/UserAlreadyExistsError");
 
 const Authentication = {
   registerUser: async (username, email, passwordHash, salt) => {
-    return Users.create({username, email, passwordHash, salt})
+    try {
+      return await Users.create({username, email, passwordHash, salt})
+    } catch (error) {
+      if (error.code === 'P2002' && error.meta && error.meta.target.includes('email')) {
+        throw new UserAlreadyExistsError()
+      } else {
+        throw error;
+      }
+    }
   },
   loginUser: async (email, password) => {
     const user = await prisma.user.findUnique({ where: { email } });

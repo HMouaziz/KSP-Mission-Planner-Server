@@ -15,9 +15,10 @@ const { handleRequest } = require("../utils/handleRequest");
 const { getAsync } = require("../redis/redisUtils");
 const UserNotFoundError = require("../errors/UserNotFoundError");
 const PasswordMismatchError = require("../errors/PasswordMismatchError");
+const UserAlreadyExistsError = require("../errors/UserAlreadyExistsError");
 
 const authController = {
-  registerUser: handleRequest(async (req) => {
+  registerUser: handleRequest(async (req, res, next) => {
     const { data } = req.body;
     const result = await decryptData(data);
     const { email, password } = JSON.parse(result);
@@ -26,8 +27,16 @@ const authController = {
     const salt = await generateSalt();
     const passwordHash = await hashPassword(password, salt);
 
-    const user = await registerUser(username, email, passwordHash, salt);
-    return { status: 200, body: { data: user } };
+    try {
+      const user = await registerUser(username, email, passwordHash, salt);
+      return { status: 200, body: { data: user } };
+    } catch (error) {
+      if (error instanceof UserAlreadyExistsError) {
+        return { status: error.status, body: { error: error.message } };
+      }
+      next(error)
+    }
+
   }),
   loginUser: handleRequest(async (req, res, next) => {
     const { data } = req.body;
