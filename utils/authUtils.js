@@ -27,6 +27,9 @@ async function hashPassword(password, salt) {
 }
 
 function generateToken(user) {
+  if (!user) {
+    return null;
+  }
   const ttl = 24 * 60 * 60;
   const secretKey = process.env.JWT_SECRET;
   const token = jwt.sign(

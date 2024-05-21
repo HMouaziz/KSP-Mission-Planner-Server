@@ -13,6 +13,8 @@ const jwt = require("jsonwebtoken");
 const { handleRequest } = require("../utils/handleRequest");
 
 const { getAsync } = require("../redis/redisUtils");
+const UserNotFoundError = require("../errors/UserNotFoundError");
+const PasswordMismatchError = require("../errors/PasswordMismatchError");
 
 const authController = {
   registerUser: handleRequest(async (req) => {
@@ -27,18 +29,24 @@ const authController = {
     const user = await registerUser(username, email, passwordHash, salt);
     return { status: 200, body: { data: user } };
   }),
-  loginUser: handleRequest(async (req, res) => {
+  loginUser: handleRequest(async (req, res, next) => {
     const { data } = req.body;
     const result = await decryptData(data);
     const { email, password } = JSON.parse(result);
-
-    const token = await loginUser(email, password);
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "Strict",
-    });
-    return { status: 200, body: { data: "Login Successful" } };
+    try {
+      const token = await loginUser(email, password);
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "Strict",
+      });
+      return { status: 200, body: { data: "Login Successful" } };
+    } catch (error) {
+      if (error instanceof UserNotFoundError || error instanceof PasswordMismatchError) {
+        return { status: error.status, body: { error: error.message } };
+      }
+      next(error)
+    }
   }),
   logoutUser: handleRequest(async (req, res) => {
     const token = req.cookies.token;

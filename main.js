@@ -37,7 +37,7 @@ app.use(morgan("dev"));
 //TODO: Content Security Policy for helmet
 //TODO: Morgan Logging Strategy for production
 //TODO: Testing and Validation for CI/CD
-app.use(customErrorHandler);
+
 
 // Routes
 const missionRoutes = require("./routes/missions");
@@ -59,6 +59,8 @@ const authRoutes = require("./routes/auth")
 const {setAsync} = require("./redis/redisUtils");
 app.use("/api/v1/auth", authRoutes)
 
+
+app.use(customErrorHandler);
 
 // Server functions
 const checkDBConnection = async () => {

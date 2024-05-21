@@ -7,6 +7,8 @@ const { compare } = require("bcrypt");
 const Users = require("./Users");
 
 const { delAsync } = require("../redis/redisUtils");
+const UserNotFoundError = require("../errors/UserNotFoundError");
+const PasswordMismatchError = require("../errors/PasswordMismatchError");
 
 const Authentication = {
   registerUser: async (username, email, passwordHash, salt) => {
@@ -14,9 +16,11 @@ const Authentication = {
   },
   loginUser: async (email, password) => {
     const user = await prisma.user.findUnique({ where: { email } });
-
-    if (!user || !(await compare(password, user.passwordHash))) {
-      return 401;
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+    if (!(await compare(password, user.passwordHash))) {
+      throw new PasswordMismatchError();
     }
     return generateToken(user);
   },
