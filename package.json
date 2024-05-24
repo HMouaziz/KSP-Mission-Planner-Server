@@ -2,10 +2,11 @@
   "name": "ksp-missionplanner-server",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "src/main.js",
   "scripts": {
-    "start": "node main.js",
-    "dev": "node --watch main.js",
+    "start": "node src/main.js",
+    "dev": "node --watch src/main.js",
+    "build": "babel src -d dist",
     "migrate": "npx prisma migrate dev",
     "test": "mocha"
   },
@@ -28,7 +29,12 @@
     "mysql2": "^3.9.3"
   },
   "devDependencies": {
+    "@babel/cli": "^7.24.5",
+    "@babel/core": "^7.24.5",
+    "@babel/plugin-syntax-optional-chaining": "^7.8.3",
+    "@babel/preset-env": "^7.24.5",
     "@faker-js/faker": "^8.4.1",
+    "babel-cli": "^6.26.0",
     "chai": "^4.2.0",
     "mocha": "^10.4.0",
     "prettier": "^3.2.5",
