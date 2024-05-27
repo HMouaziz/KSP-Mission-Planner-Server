@@ -4,9 +4,6 @@ node_modules
 # Ignore logs
 *.log
 
-# Ignore local environment configuration files
-.env
-
 # Ignore Dockerfile and .dockerignore files themselves
 Dockerfile
 .dockerignore
@@ -17,7 +14,3 @@ Dockerfile
 .vscode
 .idea
 *.md
-
-# Ignore sensitive key files
-private.pem
-public.pem

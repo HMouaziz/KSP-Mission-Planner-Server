@@ -1,0 +1,4 @@
+CREATE USER 'service'@'%' IDENTIFIED WITH mysql_native_password BY 'notrootnotroot';
+GRANT ALL PRIVILEGES ON *.* TO 'service'@'%';
+GRANT CREATE, ALTER, DROP, INDEX, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD ON *.* TO 'service'@'%';
+FLUSH PRIVILEGES;

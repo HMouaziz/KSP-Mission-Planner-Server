@@ -4,15 +4,23 @@ LABEL authors="hmoua"
 
 WORKDIR /app
 
+FROM node:16.13-alpine
+
+LABEL authors="hmoua"
+
+WORKDIR /app
+
 COPY package.json package-lock.json ./
 
 RUN npm install
 
 ENV PATH /app/node_modules/.bin:$PATH
 
-RUN apk add --no-cache git
+RUN apk add --no-cache git bash dos2unix mysql-client
 
 COPY . ./
+
+RUN dos2unix wait-for-it.sh entrypoint.sh && chmod +x wait-for-it.sh entrypoint.sh
 
 ARG DATABASE_URL
 ARG MYSQL_ROOT_PASSWORD
@@ -26,12 +34,11 @@ ENV MYSQL_DATABASE=${MYSQL_DATABASE}
 ENV MYSQL_USER=${MYSQL_USER}
 ENV MYSQL_PASSWORD=${MYSQL_PASSWORD}
 
-RUN ls -al src
-
 RUN npm run build
 
 RUN apk add --no-cache python3 py3-pip
 
-EXPOSE 3000
+EXPOSE 5050
 
-CMD ["node", "main.js"]
+ENTRYPOINT ["/app/entrypoint.sh"]
+
