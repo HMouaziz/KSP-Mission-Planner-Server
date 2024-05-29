@@ -23,7 +23,7 @@ const eclipseController = {
             argumentOfPeriapsis
         });
 
-        const pythonProcess = spawn('python', ['./scripts/calculateEclipse.py', inputData]);
+        const pythonProcess = spawn('python', ['src/scripts/calculateEclipse.py', inputData]);
 
         pythonProcess.stdout.on('data', (data) => {
             const result = JSON.parse(data);

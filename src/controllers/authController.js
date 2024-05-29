@@ -39,6 +39,7 @@ const authController = {
 
   }),
   loginUser: handleRequest(async (req, res, next) => {
+    console.log('Received request body:', req.body)
     const { data } = req.body;
     const result = await decryptData(data);
     const { email, password } = JSON.parse(result);

@@ -18,7 +18,7 @@ mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -h mysql -e "CREATE DATABASE IF NOT EX
 
 
 # Reset migrations
-npx prisma migrate reset --force
+npx prisma migrate reset --force --skip-generate --skip-seed
 
 # Run migrations
 npx prisma migrate dev --name init

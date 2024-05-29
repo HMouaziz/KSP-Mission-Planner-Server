@@ -10,14 +10,27 @@ const fs = require('fs').promises;
 require("dotenv").config();
 
 // Variable Definitions
-const PORT = process.env.PORT ?? 8080;
+const PORT = process.env.PORT ?? 5050;
 const CLIENT = process.env.CLIENT ?? "http://localhost:5173";
 
 let server;
 const app = express();
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://your-production-domain.com'
+];
+
 const corsOptions = {
-  origin: CLIENT,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
   optionsSuccessStatus: 200
 };
@@ -41,23 +54,23 @@ app.use(morgan("dev"));
 
 // Routes
 const missionRoutes = require("./routes/missions");
-app.use("/api/v1/missions", missionRoutes);
+app.use("/v1/missions", missionRoutes);
 
 const objectiveRoutes = require("./routes/objectives");
-app.use("/api/v1/missions", objectiveRoutes);
+app.use("/v1/missions", objectiveRoutes);
 
 const stageRoutes = require("./routes/stages");
-app.use("/api/v1/missions", stageRoutes);
+app.use("/v1/missions", stageRoutes);
 
 const typeRoutes = require("./routes/types");
-app.use("/api/v1/types", typeRoutes);
+app.use("/v1/types", typeRoutes);
 
 const eclipseRoutes = require("./routes/eclipse")
-app.use("/api/v1/eclipse", eclipseRoutes)
+app.use("/v1/eclipse", eclipseRoutes)
 
 const authRoutes = require("./routes/auth")
 const {setAsync} = require("./redis/redisUtils");
-app.use("/api/v1/auth", authRoutes)
+app.use("/v1/auth", authRoutes)
 
 
 app.use(customErrorHandler);

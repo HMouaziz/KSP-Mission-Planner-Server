@@ -1,4 +1,4 @@
-FROM node:16.13-alpine
+FROM node:20.13.1-alpine
 
 LABEL authors="hmoua"
 
@@ -37,6 +37,8 @@ ENV MYSQL_PASSWORD=${MYSQL_PASSWORD}
 RUN npm run build
 
 RUN apk add --no-cache python3 py3-pip
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
 
 EXPOSE 5050
 
