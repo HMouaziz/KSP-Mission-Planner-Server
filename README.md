@@ -11,8 +11,8 @@ Before diving into the installation process, ensure you meet the following prere
 
 1. Clone the frontend and backend repositories:
    ```sh
-   git clone https://github.com/your-username/MissionPlanner-Client.git MissionPlanner-Client
-   git clone https://github.com/your-username/MissionPlanner-Server.git MissionPlanner-Server
+   git clone https://github.com/HMouaziz/MissionPlanner-Client.git MissionPlanner-Client
+   git clone https://github.com/HMouaziz/MissionPlanner-Server.git MissionPlanner-Server
    ```
 
 2. Navigate to the backend directory:
